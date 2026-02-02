@@ -8,10 +8,37 @@ import {
   Activity, Wallet, Layers, Copy, Users
 } from 'lucide-react';
 
+// --- TYPES (This fixes the TS Errors) ---
+
+interface Signal {
+  label: string;
+  value: string;
+  bar?: number;
+}
+
+interface Profile {
+  id?: number;
+  name?: string;
+  role: string;
+  subclass?: string;
+  headline?: string;
+  score: number;
+  signals?: Signal[];
+  equityAsk?: string;
+  traits?: string[];
+  imgSeed?: string;
+}
+
+interface Log {
+  text: string;
+  color?: string;
+  time: string;
+}
+
 // --- SHARED COMPONENTS ---
 
-const TerminalLog = ({ logs }) => {
-  const endRef = useRef(null);
+const TerminalLog = ({ logs }: { logs: Log[] }) => {
+  const endRef = useRef<HTMLDivElement>(null);
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [logs]);
   return (
     <div className="bg-black/80 border border-white/10 rounded-lg p-4 font-mono text-[10px] h-56 overflow-y-auto shadow-inner backdrop-blur-sm scrollbar-none">
@@ -26,7 +53,14 @@ const TerminalLog = ({ logs }) => {
   );
 };
 
-const ButtonPrimary = ({ children, onClick, disabled, className }) => (
+interface ButtonProps {
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  className?: string;
+}
+
+const ButtonPrimary = ({ children, onClick, disabled, className = '' }: ButtonProps) => (
   <button 
     onClick={onClick}
     disabled={disabled}
@@ -40,7 +74,7 @@ const ButtonPrimary = ({ children, onClick, disabled, className }) => (
 
 // --- SUB-VIEWS ---
 
-const IntroView = ({ onStart }) => (
+const IntroView = ({ onStart }: { onStart: () => void }) => (
   <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
      <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none"></div>
      
@@ -80,7 +114,16 @@ const IntroView = ({ onStart }) => (
   </div>
 );
 
-const InputView = ({ userType, setUserType, inputValue, setInputValue, onBack, onAudit }) => (
+interface InputViewProps {
+  userType: string;
+  setUserType: (t: string) => void;
+  inputValue: string;
+  setInputValue: (v: string) => void;
+  onBack: () => void;
+  onAudit: () => void;
+}
+
+const InputView = ({ userType, setUserType, inputValue, setInputValue, onBack, onAudit }: InputViewProps) => (
   <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6">
      <div className="max-w-md w-full animate-slideUp">
         <button onClick={onBack} className="group flex items-center text-xs font-bold text-zinc-600 uppercase tracking-widest mb-10 hover:text-white transition-colors">
@@ -125,7 +168,7 @@ const InputView = ({ userType, setUserType, inputValue, setInputValue, onBack, o
   </div>
 );
 
-const AuditView = ({ auditLogs }) => (
+const AuditView = ({ auditLogs }: { auditLogs: Log[] }) => (
   <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6">
      <div className="w-full max-w-md animate-fadeIn">
         <div className="flex items-center justify-between mb-6 px-1 border-b border-white/5 pb-4">
@@ -146,7 +189,12 @@ const AuditView = ({ auditLogs }) => (
   </div>
 );
 
-const ScoreRevealView = ({ myProfile, onClaim }) => (
+interface ScoreRevealViewProps {
+  myProfile: Profile;
+  onClaim: () => void;
+}
+
+const ScoreRevealView = ({ myProfile, onClaim }: ScoreRevealViewProps) => (
   <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 relative overflow-hidden">
      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -178,7 +226,11 @@ const ScoreRevealView = ({ myProfile, onClaim }) => (
   </div>
 );
 
-const EmailCaptureView = ({ onSubmit }) => {
+interface EmailCaptureViewProps {
+  onSubmit: (email: string) => void;
+}
+
+const EmailCaptureView = ({ onSubmit }: EmailCaptureViewProps) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -225,7 +277,12 @@ const EmailCaptureView = ({ onSubmit }) => {
   );
 };
 
-const DashboardView = ({ myProfile, email }) => {
+interface DashboardViewProps {
+  myProfile: Profile;
+  email: string;
+}
+
+const DashboardView = ({ myProfile, email }: DashboardViewProps) => {
   const [copied, setCopied] = useState(false);
   const referralLink = `forge.build/join/${email.split('@')[0]}-${myProfile.score}`;
 
@@ -323,15 +380,15 @@ export default function App() {
   const [view, setView] = useState('intro');
   const [userType, setUserType] = useState('builder');
   const [inputValue, setInputValue] = useState('');
-  const [auditLogs, setAuditLogs] = useState([]);
-  const [myProfile, setMyProfile] = useState(null);
+  const [auditLogs, setAuditLogs] = useState<Log[]>([]);
+  const [myProfile, setMyProfile] = useState<Profile | null>(null);
   const [userEmail, setUserEmail] = useState('');
 
   const startAudit = () => {
     if (!inputValue) return;
     setView('audit');
     let t = 0;
-    const addLog = (text, color, delay) => {
+    const addLog = (text: string, color?: string, delay: number = 0) => {
       setTimeout(() => {
         const time = new Date().toISOString().split('T')[1].slice(0, 8);
         setAuditLogs(p => [...p, { text, color, time }]);
@@ -355,14 +412,14 @@ export default function App() {
 
     setTimeout(() => {
       setMyProfile({
-        score: Math.floor(Math.random() * (98 - 85) + 85), // Random score between 85-98
+        score: Math.floor(Math.random() * (98 - 85) + 85),
         role: userType === 'builder' ? 'BUILDER' : 'OPERATOR'
       });
       setView('score');
     }, t + 1500);
   };
 
-  const handleEmailSubmit = (email) => {
+  const handleEmailSubmit = (email: string) => {
     setUserEmail(email);
     // In a real app, this is where you'd save to DB
     setView('dashboard');
@@ -373,9 +430,9 @@ export default function App() {
       {view === 'intro' && <IntroView onStart={() => setView('input')} />}
       {view === 'input' && <InputView userType={userType} setUserType={setUserType} inputValue={inputValue} setInputValue={setInputValue} onBack={() => setView('intro')} onAudit={startAudit} />}
       {view === 'audit' && <AuditView auditLogs={auditLogs} />}
-      {view === 'score' && <ScoreRevealView myProfile={myProfile} onClaim={() => setView('email')} />}
+      {view === 'score' && myProfile && <ScoreRevealView myProfile={myProfile} onClaim={() => setView('email')} />}
       {view === 'email' && <EmailCaptureView onSubmit={handleEmailSubmit} />}
-      {view === 'dashboard' && <DashboardView myProfile={myProfile} email={userEmail} />}
+      {view === 'dashboard' && myProfile && <DashboardView myProfile={myProfile} email={userEmail} />}
     </>
   );
 }
