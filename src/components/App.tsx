@@ -264,7 +264,10 @@ const EmailCaptureView = ({ onSubmit }: { onSubmit: (email: string) => void }) =
 
 const DashboardView = ({ myProfile, email }: { myProfile: Profile; email: string }) => {
   const [copied, setCopied] = useState(false);
-  const referralLink = `forge.build/join/${email.split('@')[0]}-${myProfile.score}`;
+  
+  // FIXED: Using window.location.origin to get the ACTUAL current URL (e.g. forge-waitlist.vercel.app)
+  // This removes the user-specific ID from the share link.
+  const referralLink = typeof window !== 'undefined' ? window.location.origin : 'https://forge.build';
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
