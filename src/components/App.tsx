@@ -35,63 +35,6 @@ interface Log {
   time: string;
 }
 
-// --- MOCK DATA ---
-
-const MOCK_DB: Record<string, Profile[]> = {
-  builders: [
-    {
-      id: 1,
-      name: "Kaelen V.",
-      role: "BUILDER",
-      subclass: "Systems Architect",
-      headline: "Ex-OpenAI Infra. I build systems that don't break.",
-      score: 94,
-      signals: [
-        { label: "GitHub Gravity", value: "Top 2%", bar: 98 },
-        { label: "Consistency", value: "Diamond", bar: 95 },
-        { label: "Stack", value: "Rust/C++", bar: 90 }
-      ],
-      equityAsk: "40%",
-      traits: ["Async-First", "High Risk", "Deep Work"],
-      imgSeed: "Kaelen"
-    },
-    {
-      id: 2,
-      name: "Sarah C.",
-      role: "BUILDER",
-      subclass: "Full Stack AI",
-      headline: "Shipped 3 SaaS apps in 2024. Need GTM help.",
-      score: 88,
-      signals: [
-        { label: "Shipping Speed", value: "Elite", bar: 92 },
-        { label: "Product Sense", value: "High", bar: 85 },
-        { label: "Stack", value: "Next/Py", bar: 88 }
-      ],
-      equityAsk: "50%",
-      traits: ["Rapid Iteration", "Design-Led", "Bootstrapped"],
-      imgSeed: "Sarah"
-    }
-  ],
-  operators: [
-    {
-      id: 3,
-      name: "Elena R.",
-      role: "OPERATOR",
-      subclass: "Growth & Scale",
-      headline: "I took a SaaS from $0 to $2M ARR. I can sell ice to eskimos.",
-      score: 91,
-      signals: [
-        { label: "Rev Managed", value: "$5M+", bar: 95 },
-        { label: "Exits", value: "1", bar: 100 },
-        { label: "Network", value: "Tier 1", bar: 90 }
-      ],
-      equityAsk: "50%",
-      traits: ["Sales-Led", "Fundraising", "Aggressive"],
-      imgSeed: "Elena"
-    }
-  ]
-};
-
 // --- SHARED COMPONENTS ---
 
 const TerminalLog = ({ logs }: { logs: Log[] }) => {
@@ -110,32 +53,7 @@ const TerminalLog = ({ logs }: { logs: Log[] }) => {
   );
 };
 
-const StatBadge = ({ label, value, bar }: { label: string; value: string; bar?: number }) => (
-  <div className="flex flex-col justify-center px-2 py-2 md:px-3 md:py-3 rounded bg-zinc-900 border border-white/5 w-full relative overflow-hidden group">
-    <div className="relative z-10">
-      <div className="flex justify-between items-end mb-1">
-         <span className="text-[8px] md:text-[9px] uppercase tracking-wider text-zinc-500 font-bold">{label}</span>
-      </div>
-      <span className="font-bold font-mono text-xs md:text-sm text-white truncate block">{value}</span>
-    </div>
-    <div className="absolute bottom-0 left-0 h-0.5 bg-orange-500/50 transition-all duration-1000" style={{ width: `${bar || 0}%` }}></div>
-  </div>
-);
-
-const TraitPill = ({ text }: { text: string }) => (
-  <span className="px-1.5 py-0.5 md:px-2 md:py-1 rounded-[2px] bg-zinc-900 border border-zinc-700 text-[8px] md:text-[9px] font-bold text-zinc-300 uppercase tracking-wide truncate max-w-full">
-    {text}
-  </span>
-);
-
-interface ButtonProps {
-  children: React.ReactNode;
-  onClick: () => void;
-  disabled?: boolean;
-  className?: string;
-}
-
-const ButtonPrimary = ({ children, onClick, disabled, className = '' }: ButtonProps) => (
+const ButtonPrimary = ({ children, onClick, disabled, className = '' }: { children: React.ReactNode; onClick: () => void; disabled?: boolean; className?: string }) => (
   <button 
     onClick={onClick}
     disabled={disabled}
@@ -171,17 +89,17 @@ const IntroView = ({ onStart }: { onStart: () => void }) => (
 
         <div className="w-full space-y-6 md:space-y-8">
           <ButtonPrimary onClick={onStart}>
-            Enter Protocol
+            Audit Your Profile
           </ButtonPrimary>
           
           <div className="flex justify-center space-x-6 md:space-x-8 text-[9px] md:text-[10px] text-zinc-500 font-mono uppercase tracking-wider">
              <span className="flex items-center transition-colors hover:text-zinc-300">
                 <Shield className="w-3 h-3 mr-1.5 text-zinc-600" /> 
-                Deep Scan
+                AI Verified
              </span>
              <span className="flex items-center transition-colors hover:text-zinc-300">
                 <Lock className="w-3 h-3 mr-1.5 text-zinc-600" /> 
-                Vetted Only
+                Access Limited
              </span>
           </div>
         </div>
@@ -189,16 +107,7 @@ const IntroView = ({ onStart }: { onStart: () => void }) => (
   </div>
 );
 
-interface InputViewProps {
-  userType: string;
-  setUserType: (t: string) => void;
-  inputValue: string;
-  setInputValue: (v: string) => void;
-  onBack: () => void;
-  onAudit: () => void;
-}
-
-const InputView = ({ userType, setUserType, inputValue, setInputValue, onBack, onAudit }: InputViewProps) => (
+const InputView = ({ userType, setUserType, inputValue, setInputValue, onBack, onAudit }: { userType: string; setUserType: (t: string) => void; inputValue: string; setInputValue: (v: string) => void; onBack: () => void; onAudit: () => void; }) => (
   <div className="min-h-[100dvh] bg-zinc-950 flex flex-col items-center justify-center p-6">
      <div className="max-w-md w-full animate-slideUp">
         <button onClick={onBack} className="group flex items-center text-xs font-bold text-zinc-600 uppercase tracking-widest mb-8 hover:text-white transition-colors">
@@ -207,7 +116,7 @@ const InputView = ({ userType, setUserType, inputValue, setInputValue, onBack, o
         </button>
         
         <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Identity Verification</h2>
-        <p className="text-zinc-400 text-sm mb-8 leading-relaxed">Select your archetype to begin the audit process.</p>
+        <p className="text-zinc-400 text-sm mb-8 leading-relaxed">Select your archetype to begin the deep scan.</p>
 
         <div className="grid grid-cols-2 gap-3 md:gap-4 mb-8">
            <button 
@@ -247,7 +156,7 @@ const InputView = ({ userType, setUserType, inputValue, setInputValue, onBack, o
            </div>
         </div>
         
-        <ButtonPrimary onClick={onAudit} disabled={!inputValue} className="w-full">Run Deep Scan</ButtonPrimary>
+        <ButtonPrimary onClick={onAudit} disabled={!inputValue} className="w-full">Calculate Forge Score</ButtonPrimary>
      </div>
   </div>
 );
@@ -273,12 +182,7 @@ const AuditView = ({ auditLogs }: { auditLogs: Log[] }) => (
   </div>
 );
 
-interface ScoreRevealViewProps {
-  myProfile: Profile;
-  onClaim: () => void;
-}
-
-const ScoreRevealView = ({ myProfile, onClaim }: ScoreRevealViewProps) => (
+const ScoreRevealView = ({ myProfile, onClaim }: { myProfile: Profile; onClaim: () => void }) => (
   <div className="min-h-[100dvh] bg-zinc-950 flex flex-col items-center justify-center p-6 relative overflow-hidden">
      {/* Ambient Glow */}
      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-orange-500/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -286,205 +190,178 @@ const ScoreRevealView = ({ myProfile, onClaim }: ScoreRevealViewProps) => (
      <div className="max-w-md w-full relative z-10 animate-in fade-in zoom-in-95 duration-700">
         
         <div className="bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl text-center overflow-hidden relative ring-1 ring-black/50">
-           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-50"></div>
-           
-           <div className="mb-8 inline-flex p-4 rounded-full bg-zinc-950 border border-zinc-800 shadow-inner">
-             <Shield className="w-8 h-8 text-orange-500 fill-orange-500/10" />
-           </div>
            
            <h2 className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-6">Verification Complete</h2>
            
-           <div className="relative mb-10 inline-block">
+           <div className="relative mb-8 inline-block">
              <span className="text-8xl md:text-9xl font-black text-white tracking-tighter drop-shadow-2xl">{myProfile.score}</span>
              <div className="absolute -right-6 top-2 flex flex-col items-start bg-zinc-800 px-2 py-1 rounded border border-zinc-700 transform rotate-12">
                 <span className="text-xs font-bold text-zinc-200">/100</span>
              </div>
            </div>
 
-           <div className="bg-zinc-950/50 rounded-xl border border-white/5 p-6 mb-8 text-left">
-              <div className="flex items-start space-x-4">
-                 <div className="p-2 bg-orange-950/20 rounded-lg border border-orange-500/20 shrink-0"><Clock className="w-5 h-5 text-orange-500" /></div>
-                 <div><h3 className="text-sm font-bold text-white uppercase mb-1">Manual Review Required</h3><p className="text-xs text-zinc-400 leading-relaxed">Your assets exceed the automated threshold. A human auditor must finalize your entry to prevent fraud.</p></div>
-              </div>
+           <div className="inline-flex items-center px-3 py-1.5 bg-emerald-950/30 border border-emerald-900/50 rounded-full text-emerald-500 text-[10px] font-bold uppercase tracking-wide mb-8">
+              <CheckCircle2 className="w-3 h-3 mr-1.5" />
+              {myProfile.role} Class Verified
            </div>
 
            <div className="space-y-4">
               <ButtonPrimary onClick={onClaim}>
-                 Enter Read-Only Mode
+                 Claim Score & Join Waitlist
               </ButtonPrimary>
-              <button className="w-full flex items-center justify-center text-zinc-500 text-xs font-bold uppercase py-3 hover:text-white transition-colors">
-                 <Share2 className="w-4 h-4 mr-2" /> Share Score Priority Access
-              </button>
            </div>
         </div>
      </div>
   </div>
 );
 
-interface FeedViewProps {
-  feed: Profile[];
-  myProfile: Profile;
-  onMatch: () => void;
-}
+const EmailCaptureView = ({ onSubmit }: { onSubmit: (email: string) => void }) => {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
-const FeedView = ({ feed, myProfile, onMatch }: FeedViewProps) => {
-  const [feedIndex, setFeedIndex] = useState(0);
-  const candidate = feed[feedIndex];
-
-  const nextCandidate = () => {
-    if (feedIndex < feed.length - 1) setFeedIndex(i => i + 1);
-    else alert("You have reached the end of your verified batch.");
+  const handleSubmit = () => {
+    if (!email) return;
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setLoading(false);
+      onSubmit(email);
+    }, 1500);
   };
 
   return (
-    <div className="min-h-[100dvh] bg-zinc-950 flex flex-col font-sans text-zinc-200 overflow-hidden">
-      {/* Top Nav */}
-      <header className="h-14 md:h-16 border-b border-white/5 flex justify-between items-center px-4 md:px-6 bg-zinc-950/90 backdrop-blur sticky top-0 z-50 shrink-0">
-         <div className="flex items-center space-x-3">
-            <div className="p-1.5 bg-orange-500 rounded-sm"><Flame className="w-4 h-4 text-black fill-black" /></div>
-            <span className="font-black italic text-white tracking-tighter text-lg md:text-xl">FORGE</span>
-         </div>
-         <div className="flex items-center space-x-4">
-            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-zinc-900 rounded-full border border-zinc-800">
-               <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></div>
-               <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wide">Review Pending</span>
+    <div className="min-h-[100dvh] bg-zinc-950 flex flex-col items-center justify-center p-6">
+       <div className="max-w-md w-full animate-fadeIn text-center">
+          <div className="mb-8 flex justify-center">
+            <div className="p-4 bg-zinc-900 rounded-full border border-zinc-800">
+               <Lock className="w-8 h-8 text-orange-500" />
             </div>
-            <div className="w-8 h-8 md:w-9 md:h-9 bg-zinc-900 rounded border border-white/10 flex items-center justify-center shadow-sm">
-               <span className="text-xs font-bold text-white">{myProfile.score}</span>
-            </div>
-         </div>
-      </header>
+          </div>
+          
+          <h2 className="text-2xl font-black text-white uppercase mb-2">Secure Your Spot</h2>
+          <p className="text-zinc-400 text-sm mb-8 px-4">
+             Your score qualifies you for the High-Signal Tier. Enter your email to lock your position on the ledger.
+          </p>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4 relative overflow-y-auto">
+          <div className="relative mb-4 text-left">
+             <input 
+               type="email" 
+               value={email} 
+               onChange={(e) => setEmail(e.target.value)}
+               placeholder="founder@startup.com" 
+               className="w-full bg-zinc-900 border border-zinc-700 text-white text-sm h-14 px-4 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/50 transition-all font-mono"
+               autoFocus
+             />
+          </div>
+
+          <ButtonPrimary onClick={handleSubmit} disabled={loading || !email}>
+             {loading ? "Registering..." : "Complete Registration"}
+          </ButtonPrimary>
+       </div>
+    </div>
+  );
+};
+
+const DashboardView = ({ myProfile, email }: { myProfile: Profile; email: string }) => {
+  const [copied, setCopied] = useState(false);
+  const referralLink = `forge.build/join/${email.split('@')[0]}-${myProfile.score}`;
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = () => {
+    const text = `Just verified my ${myProfile.role} profile on Forge. Scored a ${myProfile.score}/100. The network is high-signal. \n\nJoin the waitlist: ${referralLink}`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  };
+
+  return (
+    <div className="min-h-[100dvh] bg-zinc-950 flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
+      {/* Background FX */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-600 via-red-600 to-orange-600"></div>
+      
+      <div className="w-full max-w-md animate-slideUp">
          
-         {/* The Profile "Trading Card" - Constrained Height for Mobile */}
-         <div className="w-full max-w-sm bg-zinc-900 rounded-[1.5rem] border border-white/10 shadow-2xl flex flex-col relative overflow-hidden animate-in fade-in zoom-in-95 duration-500 ring-1 ring-black mb-20 md:mb-0 aspect-[9/16] max-h-[80vh]">
+         {/* Status Card */}
+         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-6 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-3 opacity-10"><Flame className="w-24 h-24" /></div>
             
-            {/* Header Section */}
-            <div className="p-5 border-b border-white/5 bg-zinc-900/50 relative z-10 backdrop-blur-sm">
-               <div className="flex justify-between items-start">
-                  <div className="flex items-center space-x-3 md:space-x-4">
-                     {/* Avatar */}
-                     <div className="w-14 h-14 md:w-16 md:h-16 rounded-xl border border-white/10 bg-zinc-800 overflow-hidden shadow-xl ring-1 ring-black/40 shrink-0">
-                        <img src={`https://api.dicebear.com/9.x/initials/svg?seed=${candidate.imgSeed}&backgroundColor=18181b`} className="w-full h-full object-cover" alt="Avatar" />
-                     </div>
-                     
-                     {/* Identity */}
-                     <div className="min-w-0">
-                        <h2 className="text-2xl md:text-3xl font-black text-white uppercase leading-none tracking-tight drop-shadow-md truncate">{candidate.name}</h2>
-                        <div className="flex flex-wrap items-center gap-2 mt-2">
-                           <span className="px-2 py-0.5 bg-white/5 text-zinc-300 text-[9px] md:text-[10px] font-bold uppercase tracking-wider rounded border border-white/10 whitespace-nowrap">{candidate.role}</span>
-                           <span className="text-[9px] md:text-[10px] font-bold text-orange-500 uppercase tracking-wide truncate">{candidate.subclass}</span>
-                        </div>
-                     </div>
-                  </div>
-                  
-                  {/* Score */}
-                  <div className="flex flex-col items-center justify-center w-10 h-12 md:w-12 md:h-14 bg-zinc-950 border border-orange-500/30 clip-path-polygon shadow-[0_0_15px_-3px_rgba(234,88,12,0.2)] shrink-0">
-                      <span className="text-[7px] md:text-[8px] text-zinc-500 font-bold uppercase mb-0.5">Score</span>
-                      <span className="text-lg md:text-xl font-black text-white leading-none">{candidate.score}</span>
-                  </div>
+            <div className="flex justify-between items-start mb-6">
+               <div>
+                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Waitlist Position</p>
+                  <h1 className="text-5xl font-black text-white tracking-tighter">#4,203</h1>
+               </div>
+               <div className="flex flex-col items-end">
+                   <div className="px-2 py-1 bg-orange-950/30 border border-orange-500/20 rounded text-[10px] font-bold text-orange-500 uppercase mb-1">
+                      Score: {myProfile.score}
+                   </div>
+                   <div className="px-2 py-1 bg-zinc-800 rounded text-[10px] font-bold text-zinc-400 uppercase">
+                      Top 12%
+                   </div>
                </div>
             </div>
 
-            {/* Body Content */}
-            <div className="p-5 space-y-5 bg-zinc-900 flex-1 flex flex-col relative">
-               <div className="absolute inset-0 bg-[linear-gradient(rgba(18,18,18,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-0 bg-[length:100%_2px,3px_100%] pointer-events-none opacity-20"></div>
-
-               <div className="relative z-10 flex flex-col h-full">
-                  <div className="relative pl-4 border-l-4 border-orange-600 mb-5">
-                     <p className="text-base md:text-lg text-white font-medium italic leading-snug">
-                        "{candidate.headline}"
+            <div className="bg-zinc-950/50 rounded-lg p-4 border border-zinc-800/50 mb-2">
+               <div className="flex items-start space-x-3">
+                  <AlertCircle className="w-4 h-4 text-orange-500 mt-0.5" />
+                  <div>
+                     <p className="text-xs font-bold text-white uppercase mb-1">Priority Access Locked</p>
+                     <p className="text-[10px] text-zinc-400 leading-relaxed">
+                        You are currently in the General Queue. To skip the line and get verified access within 48h, refer 3 high-signal founders.
                      </p>
                   </div>
-
-                  <div className="mb-5">
-                     <div className="flex items-center text-[10px] font-bold text-zinc-500 uppercase mb-2 tracking-widest">
-                        <Target className="w-3 h-3 mr-2 text-orange-500" /> Asset Ledger
-                     </div>
-                     <div className="grid grid-cols-3 gap-2">
-                        {candidate.signals?.map((s, i) => (
-                           <StatBadge key={i} label={s.label} value={s.value} bar={s.bar} />
-                        ))}
-                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 mt-auto">
-                     <div className="bg-black/40 rounded border border-white/5 p-3 flex flex-col justify-between hover:border-orange-500/30 transition-colors group">
-                        <div className="flex items-center text-[9px] font-bold text-zinc-500 uppercase mb-1 group-hover:text-orange-500 transition-colors">
-                           <Wallet className="w-3 h-3 mr-1.5" /> Equity Ask
-                        </div>
-                        <div className="text-xl md:text-2xl font-black text-white tracking-tight">{candidate.equityAsk}</div>
-                     </div>
-
-                     <div className="bg-black/40 rounded border border-white/5 p-3 flex flex-col justify-between">
-                         <div className="flex items-center text-[9px] font-bold text-zinc-500 uppercase mb-2">
-                           <Activity className="w-3 h-3 mr-1.5" /> Style
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                           {candidate.traits?.map((t, i) => (
-                              <TraitPill key={i} text={t} />
-                           ))}
-                        </div>
-                     </div>
-                  </div>
                </div>
             </div>
          </div>
 
-         {/* Action Bar - Floating at Bottom, Adjusted for Mobile */}
-         <div className="fixed bottom-6 flex items-center space-x-8 z-50 md:absolute md:bottom-8">
+         {/* Referral Section */}
+         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-8">
+             <div className="flex justify-between items-center mb-6">
+                <h3 className="text-sm font-bold text-white uppercase flex items-center">
+                   <Users className="w-4 h-4 mr-2 text-zinc-500" /> Referrals
+                </h3>
+                <span className="text-xs font-mono text-zinc-500">0 / 3 Verified</span>
+             </div>
+
+             <div className="flex space-x-2 mb-4">
+                {[1, 2, 3].map((i) => (
+                   <div key={i} className="h-2 flex-1 bg-zinc-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-orange-600 w-0"></div>
+                   </div>
+                ))}
+             </div>
+
+             <div className="relative group">
+                <div className="flex items-center bg-zinc-950 border border-zinc-800 rounded-lg p-3 pr-28">
+                   <Globe className="w-4 h-4 text-zinc-600 mr-3 shrink-0" />
+                   <span className="text-xs text-zinc-400 font-mono truncate">{referralLink}</span>
+                </div>
+                <button 
+                  onClick={copyLink}
+                  className="absolute right-1 top-1 bottom-1 px-4 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold uppercase rounded-md transition-all flex items-center"
+                >
+                   {copied ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
+                   {copied ? "Copied" : "Copy"}
+                </button>
+             </div>
+         </div>
+
+         <div className="text-center space-y-4">
             <button 
-              onClick={nextCandidate} 
-              className="group w-14 h-14 md:w-16 md:h-16 bg-zinc-900/90 backdrop-blur border border-zinc-700 rounded-full flex items-center justify-center transition-all hover:border-red-500/50 hover:shadow-[0_0_30px_-10px_rgba(239,68,68,0.5)] active:scale-95 shadow-lg"
+              onClick={handleShare}
+              className="w-full bg-[#1DA1F2] hover:bg-[#1a91da] text-white font-bold py-4 rounded-lg uppercase tracking-widest text-xs flex items-center justify-center transition-all shadow-lg active:scale-[0.98]"
             >
-               <X className="w-6 h-6 md:w-7 md:h-7 text-zinc-500 group-hover:text-red-500 transition-colors" />
+               <Share2 className="w-4 h-4 mr-2" /> Share Score on Twitter
             </button>
-            <button 
-              onClick={onMatch} 
-              className="group w-18 h-18 md:w-20 md:h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-[0_0_40px_-10px_rgba(234,88,12,0.6)] transition-all hover:scale-105 hover:shadow-orange-500/50 active:scale-95 border border-white/10"
-            >
-               <Zap className="w-8 h-8 md:w-10 md:h-10 text-white fill-white transition-transform group-hover:rotate-12" />
-            </button>
+            <p className="text-[10px] text-zinc-600 uppercase tracking-widest">Estimated Wait: 1 Week</p>
          </div>
       </div>
     </div>
   );
 };
-
-const MatchView = ({ onBack }: { onBack: () => void }) => (
-   <div className="min-h-[100dvh] bg-zinc-950 flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      <div className="z-10 text-center max-w-sm w-full bg-zinc-900/80 backdrop-blur-xl border border-white/10 p-8 md:p-10 rounded-3xl animate-in zoom-in-95 duration-300 shadow-2xl ring-1 ring-black">
-         <div className="flex justify-center mb-8">
-            <div className="p-5 bg-emerald-500/10 rounded-full border border-emerald-500/20 ring-4 ring-emerald-500/5">
-              <CheckCircle2 className="w-10 h-10 text-emerald-500" />
-            </div>
-         </div>
-         
-         <h2 className="text-3xl font-black text-white italic uppercase mb-3 tracking-tight">Protocol Initiated</h2>
-         
-         <div className="bg-zinc-950/50 rounded-xl border border-white/5 p-5 mb-8 text-left">
-           <p className="text-zinc-400 text-sm font-medium leading-relaxed mb-4">
-              Connection request logged with Forge Central.
-           </p>
-           <div className="flex items-start space-x-3">
-              <Clock className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
-              <p className="text-xs text-zinc-500 leading-relaxed">
-                 To preserve network density, all initial Build Protocols require manual clearance by a Human Auditor. We prioritize quality over volume.
-              </p>
-           </div>
-         </div>
-
-         <div className="flex items-center justify-between px-2 mb-8">
-            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Status</span>
-            <span className="text-xs font-mono font-bold text-orange-500 bg-orange-950/20 px-2 py-1 rounded border border-orange-500/20 animate-pulse">Pending Clearance (~24h)</span>
-         </div>
-         
-         <ButtonPrimary onClick={onBack} className="bg-white text-black hover:bg-zinc-200 border-none shadow-none">Return to Feed</ButtonPrimary>
-      </div>
-   </div>
-);
 
 // --- MAIN CONTROLLER ---
 
@@ -494,7 +371,7 @@ export default function App() {
   const [inputValue, setInputValue] = useState('');
   const [auditLogs, setAuditLogs] = useState<Log[]>([]);
   const [myProfile, setMyProfile] = useState<Profile | null>(null);
-  const [feed, setFeed] = useState<Profile[]>([]);
+  const [userEmail, setUserEmail] = useState('');
 
   const startAudit = () => {
     if (!inputValue) return;
@@ -524,13 +401,17 @@ export default function App() {
 
     setTimeout(() => {
       setMyProfile({
-        score: Math.floor(Math.random() * (98 - 85) + 85),
+        score: Math.floor(Math.random() * (98 - 85) + 85), // Random score between 85-98
         role: userType === 'builder' ? 'BUILDER' : 'OPERATOR'
       });
-      // Load OPPOSITE type for feed
-      setFeed(userType === 'builder' ? MOCK_DB.operators : MOCK_DB.builders);
       setView('score');
     }, t + 1500);
+  };
+
+  const handleEmailSubmit = (email: string) => {
+    setUserEmail(email);
+    // In a real app, this is where you'd save to DB
+    setView('dashboard');
   };
 
   return (
@@ -538,9 +419,9 @@ export default function App() {
       {view === 'intro' && <IntroView onStart={() => setView('input')} />}
       {view === 'input' && <InputView userType={userType} setUserType={setUserType} inputValue={inputValue} setInputValue={setInputValue} onBack={() => setView('intro')} onAudit={startAudit} />}
       {view === 'audit' && <AuditView auditLogs={auditLogs} />}
-      {view === 'score' && myProfile && <ScoreRevealView myProfile={myProfile} onClaim={() => setView('feed')} />}
-      {view === 'feed' && myProfile && <FeedView feed={feed} myProfile={myProfile} onMatch={() => setView('match')} />}
-      {view === 'match' && <MatchView onBack={() => setView('feed')} />}
+      {view === 'score' && myProfile && <ScoreRevealView myProfile={myProfile} onClaim={() => setView('email')} />}
+      {view === 'email' && <EmailCaptureView onSubmit={handleEmailSubmit} />}
+      {view === 'dashboard' && myProfile && <DashboardView myProfile={myProfile} email={userEmail} />}
     </>
   );
 }
