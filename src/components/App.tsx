@@ -279,6 +279,8 @@ const EmailCaptureView = ({ onSubmit }: { onSubmit: (email: string) => void }) =
 
 const DashboardView = ({ myProfile, email }: { myProfile: Profile; email: string }) => {
   const [copied, setCopied] = useState(false);
+  // Generate random position between 1 and 2000 once
+  const [position] = useState(() => Math.floor(Math.random() * 2000) + 1);
   
   // Clean referral link (just origin)
   const referralLink = typeof window !== 'undefined' ? window.location.origin : 'https://forge.build';
@@ -312,7 +314,7 @@ const DashboardView = ({ myProfile, email }: { myProfile: Profile; email: string
             <div className="flex justify-between items-start mb-6">
                <div>
                   <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1">Waitlist Position</p>
-                  <h1 className="text-5xl font-black text-white tracking-tighter">#4,203</h1>
+                  <h1 className="text-5xl font-black text-white tracking-tighter">#{position.toLocaleString()}</h1>
                </div>
                <div className="flex flex-col items-end">
                    <div className="px-2 py-1 bg-orange-950/30 border border-orange-500/20 rounded text-[10px] font-bold text-orange-500 uppercase mb-1">
