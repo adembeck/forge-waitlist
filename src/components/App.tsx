@@ -8,6 +8,21 @@ import {
   Activity, Wallet, Layers, Copy, Users
 } from 'lucide-react';
 
+// --- GOOGLE ANALYTICS TYPE DEFINITION ---
+declare global {
+  interface Window {
+    dataLayer: any[];
+    gtag: (...args: any[]) => void;
+  }
+}
+
+// --- ANALYTICS HELPER ---
+const trackEvent = (action: string, params?: any) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', action, params);
+  }
+};
+
 // --- TYPES ---
 
 interface Signal {
@@ -265,8 +280,7 @@ const EmailCaptureView = ({ onSubmit }: { onSubmit: (email: string) => void }) =
 const DashboardView = ({ myProfile, email }: { myProfile: Profile; email: string }) => {
   const [copied, setCopied] = useState(false);
   
-  // FIXED: Using window.location.origin to get the ACTUAL current URL (e.g. forge-waitlist.vercel.app)
-  // This removes the user-specific ID from the share link.
+  // Clean referral link (just origin)
   const referralLink = typeof window !== 'undefined' ? window.location.origin : 'https://forge.build';
 
   const copyLink = () => {
@@ -276,6 +290,9 @@ const DashboardView = ({ myProfile, email }: { myProfile: Profile; email: string
   };
 
   const handleShare = () => {
+    // TRACK EVENT: Clicked Share
+    trackEvent('share_click', { score: myProfile.score });
+    
     const text = `Just verified my ${myProfile.role} profile on Forge. Scored a ${myProfile.score}/100. The network is high-signal. \n\nJoin the waitlist: ${referralLink}`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
@@ -376,8 +393,14 @@ export default function App() {
   const [myProfile, setMyProfile] = useState<Profile | null>(null);
   const [userEmail, setUserEmail] = useState('');
 
+  const handleStart = () => {
+    trackEvent('begin_audit');
+    setView('input');
+  }
+
   const startAudit = () => {
     if (!inputValue) return;
+    trackEvent('deep_scan_start', { type: userType });
     setView('audit');
     let t = 0;
     const addLog = (text: string, color?: string, delay: number = 0) => {
@@ -403,8 +426,10 @@ export default function App() {
     addLog(`CALCULATING: Forge Score...`, 'text-orange-500 animate-pulse', 1000);
 
     setTimeout(() => {
+      const score = Math.floor(Math.random() * (98 - 85) + 85);
+      trackEvent('audit_complete', { score, type: userType });
       setMyProfile({
-        score: Math.floor(Math.random() * (98 - 85) + 85), // Random score between 85-98
+        score,
         role: userType === 'builder' ? 'BUILDER' : 'OPERATOR'
       });
       setView('score');
@@ -412,6 +437,7 @@ export default function App() {
   };
 
   const handleEmailSubmit = (email: string) => {
+    trackEvent('generate_lead', { email_domain: email.split('@')[1] });
     setUserEmail(email);
     // In a real app, this is where you'd save to DB
     setView('dashboard');
@@ -419,7 +445,7 @@ export default function App() {
 
   return (
     <>
-      {view === 'intro' && <IntroView onStart={() => setView('input')} />}
+      {view === 'intro' && <IntroView onStart={handleStart} />}
       {view === 'input' && <InputView userType={userType} setUserType={setUserType} inputValue={inputValue} setInputValue={setInputValue} onBack={() => setView('intro')} onAudit={startAudit} />}
       {view === 'audit' && <AuditView auditLogs={auditLogs} />}
       {view === 'score' && myProfile && <ScoreRevealView myProfile={myProfile} onClaim={() => setView('email')} />}
